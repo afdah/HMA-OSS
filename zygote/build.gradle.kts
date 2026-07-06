@@ -93,7 +93,7 @@ zygisk {
     author = "frknkrc44"
     description = "A Zygisk backend for HMA-OSS"
     entrypoint = "org.frknkrc44.hma_oss.zygote.ZygoteEntry"
-    archiveName = "${rootProject.name}-ZYGISK-${android.defaultConfig.versionName}"
+    archiveName = "${rootProject.name}-${android.defaultConfig.versionName}"
     isAddVariantToArchiveName = true
 }
 

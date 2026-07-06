@@ -35,7 +35,13 @@ fun getUncommittedSuffix(): String {
     val shortRef = "git rev-parse --short HEAD".execute()
 
     if (ciBuild) {
-        val headRefVal = providers.environmentVariable("GITHUB_HEAD_REF").orElse("HEAD").get()
+        // GITHUB_HEAD_REF is only populated on pull_request events; on workflow_dispatch
+        // it is present-but-empty, so .orElse() does not fire and the branch component
+        // becomes "" (version "-<hash>"). Fall back to GITHUB_REF_NAME (= branch on
+        // dispatch/push) so the version becomes "<branch>-<hash>" (e.g. zygisk-<hash>).
+        val headRefRaw = providers.environmentVariable("GITHUB_HEAD_REF").orElse("").get()
+        val refName = providers.environmentVariable("GITHUB_REF_NAME").orElse("").get()
+        val headRefVal = headRefRaw.ifEmpty { refName }.ifEmpty { "HEAD" }.split("/").last()
         return "$headRefVal-$shortRef"
     }
 
